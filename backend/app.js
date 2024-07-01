@@ -1,19 +1,22 @@
 const express = require('express');
 const path = require('path');
-const uploadRouter = require('./routes/upload');
 
 const app = express();
 
 // Serve static files from the public directory
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Use upload router
-app.use('/api/upload', uploadRouter);
-
 // Serve index.html for the root path
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../index.html'));
+  res.sendFile(path.join(__dirname, '../public/index.html'));
 });
+
+// For local development, you might want to add a proxy for the /api/upload route
+// This would forward requests to your Python script when running locally
+if (process.env.NODE_ENV === 'development') {
+  const { createProxyMiddleware } = require('http-proxy-middleware');
+  app.use('/api/upload', createProxyMiddleware({ target: 'http://localhost:5000', changeOrigin: true }));
+}
 
 // Error handling middleware
 app.use((err, req, res, next) => {

@@ -2,4 +2,3 @@ jupyter
 nbconvert
 sqlparse
 graphviz
-pygraphviz

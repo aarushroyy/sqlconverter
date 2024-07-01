@@ -1,24 +1,12 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "backend/app.js",
-        "use": "@vercel/node"
+    "functions": {
+      "api/upload.py": {
+        "runtime": "python3.9"
       }
-    ],
+    },
     "routes": [
-      {
-        "src": "/api/upload",
-        "dest": "/backend/routes/upload.js"
-      },
-      {
-        "src": "/diagrams/(.*)",
-        "dest": "/public/diagrams/$1"
-      },
-      {
-        "src": "/(.*)",
-        "dest": "/index.html"
-      }
-    ]
+      { "src": "/api/upload", "dest": "/api/upload.py" },
+      { "src": "/(.*)", "dest": "/public/$1" }
+    ],
+    "outputDirectory": "public"
   }
-  
