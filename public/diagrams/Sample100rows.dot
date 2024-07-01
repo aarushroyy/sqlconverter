@@ -1,0 +1,28 @@
+// ER Diagram
+digraph {
+	rankdir=LR
+	user_details [label=user_details shape=box]
+	user_profiles [label=user_profiles shape=box]
+	posts [label=posts shape=box]
+	comments [label=comments shape=box]
+	likes [label=likes shape=box]
+	friendships [label=friendships shape=box]
+	messages [label=messages shape=box]
+	user_interests [label=user_interests shape=box]
+	events [label=events shape=box]
+	event_participants [label=event_participants shape=box]
+	user_profiles -> user_details [label="user_id -> user_id" fontsize=10]
+	posts -> user_details [label="user_id -> user_id" fontsize=10]
+	comments -> posts [label="post_id -> post_id" fontsize=10]
+	comments -> user_details [label="user_id -> user_id" fontsize=10]
+	likes -> user_details [label="user_id -> user_id" fontsize=10]
+	likes -> posts [label="post_id -> post_id" fontsize=10]
+	friendships -> user_details [label="user_id1 -> user_id" fontsize=10]
+	friendships -> user_details [label="user_id2 -> user_id" fontsize=10]
+	messages -> user_details [label="sender_id -> user_id" fontsize=10]
+	messages -> user_details [label="receiver_id -> user_id" fontsize=10]
+	user_interests -> user_details [label="user_id -> user_id" fontsize=10]
+	events -> user_details [label="creator_id -> user_id" fontsize=10]
+	event_participants -> events [label="event_id -> event_id" fontsize=10]
+	event_participants -> user_details [label="user_id -> user_id" fontsize=10]
+}

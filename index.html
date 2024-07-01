@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SQL File Upload and ER Diagram Generator</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      line-height: 1.6;
+      color: #e0e0e0;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background-color: #121212;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #64b5f6;
+      margin-bottom: 30px;
+    }
+    #uploadForm {
+      background-color: #1e1e1e;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    #sqlFile {
+      display: none;
+    }
+    .file-input-label {
+      display: inline-block;
+      padding: 10px 15px;
+      background-color: #2196f3;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .file-input-label:hover {
+      background-color: #1976d2;
+    }
+    #generateButton {
+      display: none;
+      width: 100%;
+      padding: 10px;
+      margin-top: 20px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    #generateButton:hover {
+      background-color: #45a049;
+    }
+    #status, #diagram {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 8px;
+    }
+    .success { background-color: #1b5e20; color: #c8e6c9; }
+    .error { background-color: #b71c1c; color: #ffcdd2; }
+    #erDiagram {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    #fileName {
+      margin-left: 10px;
+      color: #90caf9;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>SQL File Upload and ER Diagram Generator</h1>
+    <form id="uploadForm">
+      <input type="file" id="sqlFile" name="sqlFile" accept=".sql" required>
+      <label for="sqlFile" class="file-input-label">Choose SQL File</label>
+      <span id="fileName"></span>
+      <button type="button" id="generateButton">Generate ER Diagram</button>
+    </form>
+    <div id="status" style="display: none;"></div>
+    <div id="diagram" style="display: none;">
+      <h2>Generated ER Diagram</h2>
+      <img id="erDiagram" src="" alt="ER Diagram">
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('uploadForm');
+    const fileInput = document.getElementById('sqlFile');
+    const fileNameSpan = document.getElementById('fileName');
+    const generateButton = document.getElementById('generateButton');
+    const status = document.getElementById('status');
+    const diagram = document.getElementById('diagram');
+    const erDiagram = document.getElementById('erDiagram');
+
+    fileInput.addEventListener('change', function(e) {
+      if (this.files && this.files[0]) {
+        fileNameSpan.textContent = this.files[0].name;
+        generateButton.style.display = 'block';
+      }
+    });
+
+    generateButton.addEventListener('click', async function(e) {
+      const formData = new FormData(form);
+      
+      status.textContent = 'Uploading and generating ER diagram...';
+      status.className = '';
+      status.style.display = 'block';
+      diagram.style.display = 'none';
+
+      try {
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          status.textContent = `${result.message} - File: ${result.file.name}, Size: ${result.file.size} bytes`;
+          status.className = 'success';
+          erDiagram.src = result.diagram;
+          diagram.style.display = 'block';
+        } else {
+          throw new Error(result.message);
+        }
+      } catch (error) {
+        status.textContent = `Upload failed: ${error.message}`;
+        status.className = 'error';
+      }
+    });
+  </script>
+</body>
+</html>
