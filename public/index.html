@@ -140,6 +140,45 @@
         status.className = 'error';
       }
     });
-  </script>
+    generateButton.addEventListener('click', async function(e) {
+      const formData = new FormData(form);
+      
+      status.textContent = 'Uploading and generating ER diagram...';
+      status.className = '';
+      status.style.display = 'block';
+      diagram.style.display = 'none';
+  
+      try {
+          const response = await fetch('/api/upload', {
+              method: 'POST',
+              body: formData
+          });
+  
+          if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.message || 'Server error');
+          }
+  
+          const contentType = response.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+              // It's an error response
+              const errorData = await response.json();
+              throw new Error(errorData.message || 'Server error');
+          } else {
+              // It's the PNG image
+              const blob = await response.blob();
+              const imageUrl = URL.createObjectURL(blob);
+              erDiagram.src = imageUrl;
+              diagram.style.display = 'block';
+              status.textContent = 'ER diagram generated successfully';
+              status.className = 'success';
+          }
+      } catch (error) {
+          status.textContent = `Upload failed: ${error.message}`;
+          status.className = 'error';
+          console.error('Full error:', error);
+      }
+  });
+</script>
 </body>
 </html>
