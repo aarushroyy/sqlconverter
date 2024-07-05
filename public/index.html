@@ -154,17 +154,12 @@
               body: formData
           });
   
-          if (!response.ok) {
-              const errorData = await response.json();
-              throw new Error(errorData.message || 'Server error');
-          }
-  
           const contentType = response.headers.get('content-type');
           if (contentType && contentType.includes('application/json')) {
-              // It's an error response
-              const errorData = await response.json();
-              throw new Error(errorData.message || 'Server error');
-          } else {
+              // It's a JSON response (likely an error)
+              const result = await response.json();
+              throw new Error(result.message || 'Server error');
+          } else if (contentType && contentType.includes('image/png')) {
               // It's the PNG image
               const blob = await response.blob();
               const imageUrl = URL.createObjectURL(blob);
@@ -172,6 +167,8 @@
               diagram.style.display = 'block';
               status.textContent = 'ER diagram generated successfully';
               status.className = 'success';
+          } else {
+              throw new Error('Unexpected response from server');
           }
       } catch (error) {
           status.textContent = `Upload failed: ${error.message}`;

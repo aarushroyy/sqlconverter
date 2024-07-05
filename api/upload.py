@@ -17,8 +17,7 @@ class handler(BaseHTTPRequestHandler):
             )
 
             if 'sqlFile' not in form:
-                self.send_error(400, 'No file uploaded')
-                return
+                raise ValueError('No file uploaded')
 
             sql_file = form['sqlFile']
             sql_content = sql_file.file.read().decode('utf-8')
@@ -31,7 +30,7 @@ class handler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(png_data)
         except Exception as e:
-            self.send_response(500)
+            self.send_error(500, 'Internal Server Error')
             self.send_header('Content-type', 'application/json')
             self.end_headers()
             error_message = str(e)
@@ -43,7 +42,7 @@ class handler(BaseHTTPRequestHandler):
             }).encode('utf-8'))
 
     def do_GET(self):
-        self.send_response(405)
+        self.send_error(405, 'Method Not Allowed')
         self.send_header('Content-type', 'application/json')
         self.end_headers()
         self.wfile.write(json.dumps({
