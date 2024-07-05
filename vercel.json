@@ -1,7 +1,0 @@
-{
-  "version": 2,
-  "routes": [
-    { "src": "/api/upload", "dest": "api/upload.py" },
-    { "src": "/(.*)", "dest": "/public/$1" }
-  ]
-}
